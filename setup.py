@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 from setuptools.command.develop import develop
 from setuptools.command.install import install
 from tempfile import TemporaryDirectory
-
+import argparse
 
 cwd = os.path.dirname(os.path.abspath(__file__))
 
@@ -40,10 +40,15 @@ setup(
     },
 )
 
+parser = argparse.ArgumentParser(description='Download model')
+parser.add_argument('--config_path', type=str, default='/work/data', help='path for config file')
+parser.add_argument('--ckpt_path', type=str, default='/work/data/model_cache', help='path for model checkpoint')
+args = parser.parse_args()
+
 # download model to /data/model_cache
 from melo.api import TTS
 try:
-    engine = TTS(language='ZH', device='cuda:0', config_path='./work/data/' ,ckpt_path='./work/data/model_cache')
+    engine = TTS(language='ZH', device='cuda:0', config_path=args.config_path ,ckpt_path=args.ckpt_path)
     speaker_ids = engine.hps.data.spk2id
     speak_speed = 1.0
     word = "准备好开始了"
