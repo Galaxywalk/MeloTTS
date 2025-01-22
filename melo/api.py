@@ -80,7 +80,7 @@ class TTS(nn.Module):
             print(" > ===========================")
         return texts
 
-    def tts_to_file(self, text, speaker_id, output_path=None, sdp_ratio=0.2, noise_scale=0.6, noise_scale_w=0.8, speed=1.0, pbar=None, format=None, position=None, quiet=False,):
+    def tts_to_file(self, text, speaker_id, output_path=None, sdp_ratio=0.2, noise_scale=0.6, noise_scale_w=0.8, speed=1.0, pbar=None, format=None, position=None, quiet=False, loudness=-12.0):
         language = self.language
         texts = self.split_sentences_into_pieces(text, language, quiet)
         audio_list = []
@@ -122,7 +122,7 @@ class TTS(nn.Module):
                     )[0][0, 0].data.cpu().float().numpy()
                 del x_tst, tones, lang_ids, bert, ja_bert, x_tst_lengths, speakers
                 # 
-            audio_list.append(utils.fix_loudness(audio,self.hps.data.sampling_rate))
+            audio_list.append(utils.fix_loudness(audio,self.hps.data.sampling_rate, loudness))
         torch.cuda.empty_cache()
         audio = self.audio_numpy_concat(audio_list, sr=self.hps.data.sampling_rate, speed=speed)
 

@@ -18,16 +18,13 @@ MATPLOTLIB_FLAG = False
 
 logger = logging.getLogger(__name__)
 
-def fix_loudness(input, rate):
-    # 峰值归一化至 -1 dB
+def fix_loudness(input, rate, target_loudness=-12.0):
     peak_normalized_audio = pyln.normalize.peak(input, -1.0)
-
-    # 测量响度
+    # current loudness
     meter = pyln.Meter(rate)
     loudness = meter.integrated_loudness(peak_normalized_audio)
-
-    # 响度归一化至 -12 dB LUFS
-    return pyln.normalize.loudness(peak_normalized_audio, loudness, -12.0)
+    # normalize to -12 dB LUFS (or customized value)
+    return pyln.normalize.loudness(peak_normalized_audio, loudness, target_loudness)
 
 
 
