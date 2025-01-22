@@ -2,8 +2,6 @@ import os
 from setuptools import setup, find_packages
 from setuptools.command.develop import develop
 from setuptools.command.install import install
-from tempfile import TemporaryDirectory
-import argparse
 
 cwd = os.path.dirname(os.path.abspath(__file__))
 
@@ -39,22 +37,3 @@ setup(
         ],
     },
 )
-
-parser = argparse.ArgumentParser(description='Download model')
-parser.add_argument('--config_path', type=str, default='/work/data', help='path for config file')
-parser.add_argument('--ckpt_path', type=str, default='/work/data/model_cache', help='path for model checkpoint')
-args = parser.parse_args()
-
-# download model to /data/model_cache
-from melo.api import TTS
-try:
-    engine = TTS(language='ZH', device='cuda:0', config_path=args.config_path ,ckpt_path=args.ckpt_path)
-    speaker_ids = engine.hps.data.spk2id
-    speak_speed = 1.0
-    word = "准备好开始了"
-    with TemporaryDirectory() as temp_dir:
-        temp_file = os.path.join(temp_dir, 'temp.wav')
-        engine.tts_to_file(word, speaker_ids['ZH'], temp_file, speed=speak_speed)
-except Exception as e:
-    print(e)
-    print("Failed to download model, please check your network connection and try again.")
